@@ -1,0 +1,391 @@
+/* UK Benefits Calculator — Styles */
+
+/* ── Variables ──────────────────────────────────────────── */
+:root {
+  --bg: #f3f2f1;
+  --surface: #ffffff;
+  --primary: #1d70b8;
+  --primary-dark: #003078;
+  --success: #00703c;
+  --warning: #f47738;
+  --error: #d4351c;
+  --text: #0b0c0c;
+  --text-secondary: #505a5f;
+  --border: #b1b4b6;
+  --border-strong: #0b0c0c;
+  --highlight: #ffdd00;
+  --radius: 4px;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ── Reset & Base ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.site-header {
+  background: var(--primary);
+  color: white;
+  padding: 24px 0;
+  margin-bottom: 32px;
+}
+.site-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.site-header .subtitle {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+.site-header a { color: var(--highlight); }
+
+/* ── Form ───────────────────────────────────────────────── */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.form-section h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--text);
+}
+
+/* ── Fields ─────────────────────────────────────────────── */
+.field-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.field-row label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.field-row input[type="number"],
+.field-row select {
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  width: 100%;
+  max-width: 320px;
+  background: white;
+}
+
+.field-row input:focus,
+.field-row select:focus {
+  outline: 3px solid var(--highlight);
+  outline-offset: 2px;
+  border-color: var(--text);
+}
+
+/* ── Person Cards ───────────────────────────────────────── */
+.person-card, .children-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.person-card legend, .children-card legend {
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0 4px;
+}
+
+/* ── Toggle Buttons ─────────────────────────────────────── */
+.toggle-group {
+  display: flex;
+  gap: 0;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-strong);
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  margin-left: -1px; /* collapse borders */
+  transition: background 0.15s;
+}
+
+.toggle-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); margin-left: 0; }
+.toggle-btn:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+
+.toggle-btn:hover { background: var(--bg); }
+.toggle-btn.active {
+  background: var(--text);
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Child Counters ─────────────────────────────────────── */
+.child-counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.child-counter {
+  flex: 1;
+  min-width: 160px;
+}
+
+.counter-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+}
+
+.counter-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.counter-btn {
+  padding: 8px 14px;
+  border: none;
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.1s;
+}
+
+.counter-btn:hover { background: var(--border); }
+.counter-btn:active { background: var(--text); color: white; }
+
+.counter-value {
+  min-width: 36px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 6px 8px;
+}
+
+/* ── Calculate Button ────────────────────────────────────── */
+.calculate-row {
+  margin-top: 24px;
+}
+
+.calculate-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.calculate-btn:hover { background: #005a30; }
+.calculate-btn:active { background: #00301e; }
+
+/* ── Results Section ────────────────────────────────────── */
+#results-section {
+  animation: fadein 0.2s ease-out;
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.disposable-hero {
+  background: var(--surface);
+  border: 3px solid var(--success);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.disposable-hero.negative {
+  border-color: var(--error);
+}
+
+.disposable-hero .amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--success);
+  margin-bottom: 4px;
+}
+
+.disposable-hero.negative .amount { color: var(--error); }
+
+.disposable-hero .label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.result-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.result-group summary {
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+.result-group summary:hover { background: var(--border); }
+
+.result-group[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.result-rows {
+  padding: 0;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.result-row:last-child { border-bottom: none; }
+
+.result-row .label {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.result-row .amount {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 600;
+  text-align: right;
+  min-width: 100px;
+}
+
+.result-row.income .amount { color: var(--success); }
+.result-row.benefit .amount { color: var(--primary); }
+.result-row.deduction .amount { color: var(--error); }
+.result-row.cost .amount { color: var(--text); }
+
+.result-row .note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Sensitivity Buttons ────────────────────────────────── */
+h3 {
+  font-size: 1.1rem;
+  margin: 24px 0 12px;
+}
+
+.sensitivity-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sensitivity-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  background: white;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.sensitivity-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+.site-footer {
+  margin-top: 48px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+
+.site-footer p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+.site-footer a { color: var(--primary); }
+
+/* ── Utilities ───────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .container { padding: 0 12px; }
+  .form-section { padding: 16px; }
+  .child-counters { flex-direction: column; }
+  .field-row input[type="number"],
+  .field-row select { max-width: 100%; }
+  .disposable-hero .amount { font-size: 2rem; }
+}

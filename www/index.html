@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK Benefits Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>UK Benefits &amp; Disposable Income Calculator</h1>
+      <p class="subtitle">No data leaves your browser.
+        <a href="https://github.com/corruptmem/benefits-uk" target="_blank" rel="noopener">Source on GitHub</a>
+      </p>
+    </div>
+  </header>
+
+  <main class="container" id="app">
+
+    <!-- ── Input Form ─────────────────────────────────────────────── -->
+    <section class="form-section" id="input-form">
+      <h2>Your Household</h2>
+
+      <!-- Person 1 -->
+      <fieldset class="person-card" id="person1">
+        <legend>Person 1</legend>
+
+        <div class="field-row">
+          <label for="p1-wage">Hourly wage (£)</label>
+          <input type="number" id="p1-wage" min="0" step="0.01" placeholder="12.00" value="12.00">
+        </div>
+
+        <div class="field-row">
+          <label>Days worked per week</label>
+          <div class="toggle-group" role="group" aria-label="Days worked per week">
+            <button class="toggle-btn active" data-field="p1-days" data-value="0">0</button>
+            <button class="toggle-btn" data-field="p1-days" data-value="2">2</button>
+            <button class="toggle-btn" data-field="p1-days" data-value="5">5</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="p1-pip-care">PIP — Daily Living Component</label>
+          <select id="p1-pip-care">
+            <option value="0">None</option>
+            <option value="1">Lower rate</option>
+            <option value="2">Middle rate</option>
+            <option value="3">Higher rate</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p1-pip-mobility">PIP — Mobility Component</label>
+          <select id="p1-pip-mobility">
+            <option value="0">None</option>
+            <option value="1">Lower rate</option>
+            <option value="2">Higher rate</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p1-commute">Commute Method</label>
+          <select id="p1-commute">
+            <option value="none">N/A</option>
+            <option value="car">Car</option>
+            <option value="train">Train</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p1-student-loan">Student Loan Plan</label>
+          <select id="p1-student-loan">
+            <option value="0">No loan</option>
+            <option value="1">Plan 1</option>
+            <option value="2">Plan 2</option>
+            <option value="4">Plan 4</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <!-- Person 2 Toggle -->
+      <div class="field-row">
+        <label>
+          <input type="checkbox" id="p2-enabled"> Add Person 2 (partner)
+        </label>
+      </div>
+
+      <!-- Person 2 (conditional) -->
+      <fieldset class="person-card" id="person2" style="display:none" disabled>
+        <legend>Person 2</legend>
+
+        <div class="field-row">
+          <label for="p2-wage">Hourly wage (£)</label>
+          <input type="number" id="p2-wage" min="0" step="0.01" placeholder="12.00" value="12.00">
+        </div>
+
+        <div class="field-row">
+          <label>Days worked per week</label>
+          <div class="toggle-group" role="group" aria-label="Days worked per week">
+            <button class="toggle-btn" data-field="p2-days" data-value="0">0</button>
+            <button class="toggle-btn" data-field="p2-days" data-value="2">2</button>
+            <button class="toggle-btn" data-field="p2-days" data-value="5">5</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="p2-pip-care">PIP — Daily Living Component</label>
+          <select id="p2-pip-care">
+            <option value="0">None</option>
+            <option value="1">Lower rate</option>
+            <option value="2">Middle rate</option>
+            <option value="3">Higher rate</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p2-pip-mobility">PIP — Mobility Component</label>
+          <select id="p2-pip-mobility">
+            <option value="0">None</option>
+            <option value="1">Lower rate</option>
+            <option value="2">Higher rate</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p2-commute">Commute Method</label>
+          <select id="p2-commute">
+            <option value="none">N/A</option>
+            <option value="car">Car</option>
+            <option value="train">Train</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="p2-student-loan">Student Loan Plan</label>
+          <select id="p2-student-loan">
+            <option value="0">No loan</option>
+            <option value="1">Plan 1</option>
+            <option value="2">Plan 2</option>
+            <option value="4">Plan 4</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <!-- Children -->
+      <fieldset class="children-card">
+        <legend>Children</legend>
+        <div class="child-counters">
+          <div class="child-counter">
+            <label>
+              <span class="counter-label">Non-disabled children</span>
+              <div class="counter-control">
+                <button class="counter-btn minus" data-counter="kids-none">−</button>
+                <span class="counter-value" id="kids-none">0</span>
+                <button class="counter-btn plus" data-counter="kids-none">+</button>
+              </div>
+            </label>
+          </div>
+          <div class="child-counter">
+            <label>
+              <span class="counter-label">Lower-rate disabled</span>
+              <div class="counter-control">
+                <button class="counter-btn minus" data-counter="kids-lower">−</button>
+                <span class="counter-value" id="kids-lower">0</span>
+                <button class="counter-btn plus" data-counter="kids-lower">+</button>
+              </div>
+            </label>
+          </div>
+          <div class="child-counter">
+            <label>
+              <span class="counter-label">Higher-rate disabled</span>
+              <div class="counter-control">
+                <button class="counter-btn minus" data-counter="kids-higher">−</button>
+                <span class="counter-value" id="kids-higher">0</span>
+                <button class="counter-btn plus" data-counter="kids-higher">+</button>
+              </div>
+            </label>
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Location &amp; Costs</h2>
+
+      <div class="field-row">
+        <label for="property-size">Property size (for rent estimate)</label>
+        <select id="property-size">
+          <option value="1br">1 bedroom</option>
+          <option value="2br" selected>2 bedrooms</option>
+          <option value="3br">3+ bedrooms</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label for="monthly-rent">Monthly rent (£)</label>
+        <input type="number" id="monthly-rent" min="0" step="1" placeholder="950" value="950">
+      </div>
+
+      <div class="field-row">
+        <label for="council-tax">Annual Council Tax (£)</label>
+        <input type="number" id="council-tax" min="0" step="1" placeholder="1700" value="1700">
+      </div>
+
+      <div class="field-row">
+        <label for="utilities">Annual Utilities (£)</label>
+        <input type="number" id="utilities" min="0" step="1" placeholder="2200" value="2200">
+      </div>
+
+      <div class="calculate-row">
+        <button id="calculate-btn" class="calculate-btn">Calculate Disposable Income</button>
+      </div>
+    </section>
+
+    <!-- ── Results ───────────────────────────────────────────────── -->
+    <section id="results-section" style="display:none">
+      <h2>Results</h2>
+
+      <div id="disposable-hero" class="disposable-hero"></div>
+
+      <details class="result-group">
+        <summary>💷 Income</summary>
+        <div id="results-income"></div>
+      </details>
+
+      <details class="result-group">
+        <summary>🏛️ Benefits</summary>
+        <div id="results-benefits"></div>
+      </details>
+
+      <details class="result-group">
+        <summary>✂️ Deductions</summary>
+        <div id="results-deductions"></div>
+      </details>
+
+      <details class="result-group">
+        <summary>🏠 Costs</summary>
+        <div id="results-costs"></div>
+      </details>
+
+      <h3>What if…?</h3>
+      <div class="sensitivity-buttons">
+        <button class="sensitivity-btn" id="sens-1day">1 more day work</button>
+        <button class="sensitivity-btn" id="sens-nokids">No kids</button>
+        <button class="sensitivity-btn" id="sens-nodisability">No disability claims</button>
+        <button class="sensitivity-btn" id="sens-cheapestarea">Cheapest area</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        Benefit rates from UK government (2024/25 tax year).
+        This is an unofficial calculator — always check
+        <a href="https://www.gov.uk/benefits-calculators" target="_blank" rel="noopener">gov.uk</a>
+        for official guidance.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
