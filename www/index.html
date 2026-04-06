@@ -182,6 +182,29 @@
 
       <h2>Location &amp; Costs</h2>
 
+      <!-- Area Selector -->
+      <div class="field-row">
+        <label for="area-select">Area (UK town or city)</label>
+        <div class="area-search-wrapper">
+          <input
+            type="text"
+            id="area-search"
+            placeholder="Search for a town or city..."
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+          <div id="area-dropdown" class="area-dropdown" style="display:none">
+            <!-- populated by JS -->
+          </div>
+        </div>
+        <div id="area-selected" class="area-selected" style="display:none">
+          <span id="area-name"></span>
+          <button id="area-clear" class="area-clear-btn" type="button">✕</button>
+        </div>
+      </div>
+
+      <!-- Auto-filled from area selection -->
       <div class="field-row">
         <label for="property-size">Property size (for rent estimate)</label>
         <select id="property-size">
@@ -194,11 +217,13 @@
       <div class="field-row">
         <label for="monthly-rent">Monthly rent (£)</label>
         <input type="number" id="monthly-rent" min="0" step="1" placeholder="950" value="950">
+        <span class="field-hint" id="rent-hint"></span>
       </div>
 
       <div class="field-row">
         <label for="council-tax">Annual Council Tax (£)</label>
         <input type="number" id="council-tax" min="0" step="1" placeholder="1700" value="1700">
+        <span class="field-hint" id="ct-hint"></span>
       </div>
 
       <div class="field-row">
@@ -259,6 +284,7 @@
     </div>
   </footer>
 
+  <script src="areas.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -370,6 +370,103 @@ h3 {
 
 .site-footer a { color: var(--primary); }
 
+/* ── Area Selector ───────────────────────────────────────── */
+.area-search-wrapper {
+  position: relative;
+  max-width: 400px;
+}
+
+#area-search {
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  width: 100%;
+  background: white;
+}
+
+#area-search:focus {
+  outline: 3px solid var(--highlight);
+  outline-offset: 2px;
+  border-color: var(--text);
+}
+
+#area-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-strong);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.area-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.area-option:last-child { border-bottom: none; }
+.area-option:hover { background: var(--bg); }
+.area-option mark {
+  background: var(--highlight);
+  border-radius: 2px;
+}
+
+.area-option .area-region {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.area-option .area-rent {
+  float: right;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.area-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #e7f3e7;
+  border: 1px solid #00703c;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  max-width: 400px;
+}
+
+.area-selected #area-name { flex: 1; font-weight: 600; color: var(--success); }
+
+.area-clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 0;
+  line-height: 1;
+}
+
+.area-clear-btn:hover { color: var(--error); }
+
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  display: block;
+}
+
 /* ── Utilities ───────────────────────────────────────────── */
 .visually-hidden {
   position: absolute;

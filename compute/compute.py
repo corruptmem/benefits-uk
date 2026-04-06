@@ -23,7 +23,7 @@ from pathlib import Path
 # Add parent dir to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from areas import get_uk_average, COUNCIL_TAX_BANDS, estimate_council_tax_from_rent, estimate_utilities
+from areas import get_uk_average, estimate_council_tax_from_rent, estimate_utilities
 from benefits import Household, calculate_benefits, calculate_disposable_income
 from tax import (calculate_income_tax, calculate_national_insurance,
                  calculate_student_loan_repayment, calculate_commute_costs)
@@ -380,6 +380,8 @@ def main():
     args = parser.parse_args()
 
     output_file = args.output
+    if args.gzip and output_file.suffix != '.gz':
+        output_file = output_file.with_suffix('.json.gz')
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Load areas (or use UK average)

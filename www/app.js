@@ -63,6 +63,32 @@ const CAR_COST_NO_MOTABILITY = 2_020;
 const TRAIN_COST_2DAY = 2_300;
 const TRAIN_COST_5DAY = 4_500;
 
+// ─── State ──────────────────────────────────────────────────────────────────
+
+let selectedArea = null;
+
+const state = {
+  p1Wage: 12.00,
+  p1Days: 0,
+  p1Care: 0,
+  p1Mobility: 0,
+  p1Commute: 'none',
+  p1Loan: 0,
+  p2Enabled: false,
+  p2Wage: 12.00,
+  p2Days: 0,
+  p2Care: 0,
+  p2Mobility: 0,
+  p2Commute: 'none',
+  p2Loan: 0,
+  kidsNone: 0,
+  kidsLower: 0,
+  kidsHigher: 0,
+  monthlyRent: 950,
+  councilTax: 1700,
+  utilities: 2200,
+};
+
 
 // ─── Calculation Functions ──────────────────────────────────────────────────────
 
@@ -132,13 +158,11 @@ function calcBenefits(p1Days, p2Days, p1Care, p2Care,
   const p1PipWeekly = calcPIP(p1Care, p1Mobility);
   const p2PipWeekly = isCouple ? calcPIP(p2Care, p2Mobility) : 0;
 
-  // LCWRA: middle or higher daily living PIP
   const p1LCWRA = p1Care >= 2;
   const p2LCWRA = isCouple && p2Care >= 2;
 
   const dlaChildAnnual = calcDLAChild(kidsLower, kidsHigher);
 
-  // Carer's Allowance
   let carersAnnual = 0;
   if (isCouple) {
     const p1CaredFor = p1Care >= 2;
@@ -147,10 +171,8 @@ function calcBenefits(p1Days, p2Days, p1Care, p2Care,
     else if (p2CaredFor && p1Days === 0 && p1Care >= 2) carersAnnual = CARERS_ALLOWANCE * 52;
   }
 
-  // UC maximum (monthly)
   let ucMaxMonthly = isCouple ? UC_COUPLE_LOWER : UC_SINGLE_LOWER;
 
-  // Child elements
   let childElemMonthly = 0;
   if (kidsNone > 0) {
     childElemMonthly += UC_CHILD_ELEMENT;
@@ -159,30 +181,25 @@ function calcBenefits(p1Days, p2Days, p1Care, p2Care,
   if (kidsLower > 0) childElemMonthly += kidsLower * UC_DISABLED_CHILD_LOWER;
   if (kidsHigher > 0) childElemMonthly += kidsHigher * UC_DISABLED_CHILD_HIGHER;
 
-  // Disability additions
   let disabilityElemMonthly = 0;
   if (p1LCWRA || p1Care >= 2) disabilityElemMonthly += UC_SEVERE_DISABILITY;
   if (isCouple && (p2LCWRA || p2Care >= 2)) disabilityElemMonthly += UC_SEVERE_DISABILITY;
 
   const ucMaxAnnual = (ucMaxMonthly + childElemMonthly + disabilityElemMonthly) * 12;
 
-  // Work allowances
   const wa1 = p1LCWRA ? UC_WORK_ALLOWANCE_LCWRA : UC_WORK_ALLOWANCE_STANDARD;
   const wa2 = isCouple
     ? (p2LCWRA ? UC_WORK_ALLOWANCE_LCWRA : UC_WORK_ALLOWANCE_STANDARD)
     : 0;
 
-  // Earnings above allowance (monthly)
   const gross1Monthly = gross1 / 12;
   const gross2Monthly = gross2 / 12;
   const earnAboveWa = Math.max(0, gross1Monthly - wa1) + Math.max(0, gross2Monthly - wa2);
 
-  // UC taper: 55p per £1
   const monthlyTaper = earnAboveWa * 0.55;
   const ucMonthly = Math.max(0, ucMaxMonthly + childElemMonthly + disabilityElemMonthly - monthlyTaper);
   const ucAnnual = ucMonthly * 12;
 
-  // Child Benefit
   const totalKids = kidsNone + kidsLower + kidsHigher;
   const cbWeekly = totalKids > 0
     ? CHILD_BENEFIT_FIRST + Math.max(0, totalKids - 1) * CHILD_BENEFIT_SUBSEQUENT
@@ -194,7 +211,6 @@ function calcBenefits(p1Days, p2Days, p1Care, p2Care,
   const totalBenefits =
     pip1Annual + pip2Annual + dlaChildAnnual + carersAnnual + ucAnnual + cbWeekly * 52;
 
-  // Benefit cap
   const cap = isCouple ? BENEFIT_CAP_COUPLE : BENEFIT_CAP_SINGLE;
   const capLifted = p1LCWRA || (isCouple && p2LCWRA) || kidsHigher > 0;
   const capDeduction = capLifted ? 0 : Math.max(0, totalBenefits - cap);
@@ -242,7 +258,6 @@ function calcDisposable(params) {
   );
 
   const costs = monthlyRent * 12 + councilTax + utilities + commuteTotal;
-
   const disposable = totalGross + benefits.totalBenefits - incomeTax - ni - studentLoan - costs;
 
   return {
@@ -269,29 +284,74 @@ function fmtMonthly(annual) {
 }
 
 
-// ─── UI ───────────────────────────────────────────────────────────────────────
+// ─── Area Search ─────────────────────────────────────────────────────────────
 
-const state = {
-  p1Wage: 12.00,
-  p1Days: 0,
-  p1Care: 0,
-  p1Mobility: 0,
-  p1Commute: 'none',
-  p1Loan: 0,
-  p2Enabled: false,
-  p2Wage: 12.00,
-  p2Days: 0,
-  p2Care: 0,
-  p2Mobility: 0,
-  p2Commute: 'none',
-  p2Loan: 0,
-  kidsNone: 0,
-  kidsLower: 0,
-  kidsHigher: 0,
-  monthlyRent: 950,
-  councilTax: 1700,
-  utilities: 2200,
-};
+let areaDropdownVisible = false;
+
+function highlight(text, query) {
+  if (!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx < 0) return text;
+  return text.slice(0, idx) + '<mark>' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+}
+
+function showAreaDropdown(areas) {
+  const dd = document.getElementById('area-dropdown');
+  dd.innerHTML = areas.map(a => `
+    <div class="area-option" data-code="${a.code}">
+      ${highlight(a.name, document.getElementById('area-search').value)}
+      <span class="area-region">${a.regionLabel}</span>
+      <span class="area-rent">£${a.rent2br.toLocaleString()}/mo</span>
+    </div>
+  `).join('');
+  dd.style.display = 'block';
+  areaDropdownVisible = true;
+}
+
+function hideAreaDropdown() {
+  document.getElementById('area-dropdown').style.display = 'none';
+  areaDropdownVisible = false;
+}
+
+function selectArea(code) {
+  const AREA_OPTIONS = window.AREA_OPTIONS || [];
+  const area = AREA_OPTIONS.find(a => a.code === code);
+  if (!area) return;
+
+  selectedArea = area;
+
+  // Show selected area chip
+  const chip = document.getElementById('area-selected');
+  chip.style.display = 'flex';
+  document.getElementById('area-name').textContent = area.name + ' (' + area.regionLabel + ')';
+
+  // Auto-fill rent
+  const size = document.getElementById('property-size').value;
+  let rent = area.rent2br;
+  if (size === '1br') rent = Math.round(area.rent2br * 0.80);
+  if (size === '3br') rent = Math.round(area.rent2br * 1.30);
+  document.getElementById('monthly-rent').value = rent;
+  document.getElementById('rent-hint').textContent = `£${rent}/mo based on ${area.name} average`;
+
+  // Auto-fill council tax
+  document.getElementById('council-tax').value = area.ctAnnual;
+  document.getElementById('ct-hint').textContent = `Based on average ${area.name} band`;
+
+  // Hide search, clear dropdown
+  document.getElementById('area-search').value = area.name;
+  hideAreaDropdown();
+}
+
+function clearArea() {
+  selectedArea = null;
+  document.getElementById('area-search').value = '';
+  document.getElementById('area-selected').style.display = 'none';
+  document.getElementById('rent-hint').textContent = '';
+  document.getElementById('ct-hint').textContent = '';
+}
+
+
+// ─── UI ─────────────────────────────────────────────────────────────────────
 
 function getState() {
   return {
@@ -323,7 +383,6 @@ function showResults(result) {
   section.style.display = 'block';
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // Hero
   const hero = document.getElementById('disposable-hero');
   const disposable = result.disposableIncome;
   const isNegative = disposable < 0;
@@ -333,7 +392,8 @@ function showResults(result) {
     <div class="label">disposable income per year &nbsp;·&nbsp; ${fmtMonthly(disposable)}</div>
   `;
 
-  // Income
+  const b = result;
+
   document.getElementById('results-income').innerHTML = `
     <div class="result-rows">
       <div class="result-row income">
@@ -343,8 +403,6 @@ function showResults(result) {
     </div>
   `;
 
-  // Benefits
-  const b = result;
   document.getElementById('results-benefits').innerHTML = `
     <div class="result-rows">
       <div class="result-row benefit">
@@ -393,7 +451,6 @@ function showResults(result) {
     </div>
   `;
 
-  // Deductions
   document.getElementById('results-deductions').innerHTML = `
     <div class="result-rows">
       <div class="result-row deduction">
@@ -412,7 +469,6 @@ function showResults(result) {
     </div>
   `;
 
-  // Costs
   document.getElementById('results-costs').innerHTML = `
     <div class="result-rows">
       <div class="result-row cost">
@@ -449,8 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const field = btn.dataset.field;
-      const group = document.querySelectorAll(`[data-field="${field}"]`);
-      group.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
   });
@@ -485,6 +540,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.textContent = state[key];
   }
 
+  // Area search
+  const areaSearch = document.getElementById('area-search');
+  areaSearch.addEventListener('input', e => {
+    const query = e.target.value.trim().toLowerCase();
+    if (!query) { hideAreaDropdown(); return; }
+    const AREA_OPTIONS = window.AREA_OPTIONS || [];
+    if (AREA_OPTIONS.length === 0) return;
+    const filtered = AREA_OPTIONS.filter(a =>
+      a.name.toLowerCase().includes(query) ||
+      a.regionLabel.toLowerCase().includes(query)
+    ).slice(0, 20);
+    showAreaDropdown(filtered);
+  });
+
+  areaSearch.addEventListener('focus', () => {
+    if (areaSearch.value.trim()) areaSearch.dispatchEvent(new Event('input'));
+  });
+
+  document.getElementById('area-dropdown').addEventListener('click', e => {
+    const opt = e.target.closest('.area-option');
+    if (opt) selectArea(opt.dataset.code);
+  });
+
+  document.getElementById('area-clear').addEventListener('click', clearArea);
+
+  // Hide dropdown on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.area-search-wrapper') && !e.target.closest('#area-dropdown')) {
+      hideAreaDropdown();
+    }
+  });
+
+  // Property size change → update rent if area selected
+  document.getElementById('property-size').addEventListener('change', () => {
+    if (selectedArea) selectArea(selectedArea.code);
+  });
+
   // Calculate button
   document.getElementById('calculate-btn').addEventListener('click', () => {
     const params = getState();
@@ -492,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showResults(result);
   });
 
-  // Sensitivity: 1 more day
+  // Sensitivity
   document.getElementById('sens-1day').addEventListener('click', () => {
     const params = getState();
     params.p1Days = Math.min(5, params.p1Days + 1);
@@ -504,31 +596,23 @@ document.addEventListener('DOMContentLoaded', () => {
     showResults(calcDisposable(params));
   });
 
-  // Sensitivity: no kids
   document.getElementById('sens-nokids').addEventListener('click', () => {
     const params = getState();
-    params.kidsNone = 0;
-    params.kidsLower = 0;
-    params.kidsHigher = 0;
+    params.kidsNone = 0; params.kidsLower = 0; params.kidsHigher = 0;
     showResults(calcDisposable(params));
   });
 
-  // Sensitivity: no disability claims
   document.getElementById('sens-nodisability').addEventListener('click', () => {
     const params = getState();
-    params.p1Care = 0;
-    params.p1Mobility = 0;
-    params.p2Care = 0;
-    params.p2Mobility = 0;
-    params.kidsLower = 0;
-    params.kidsHigher = 0;
+    params.p1Care = 0; params.p1Mobility = 0;
+    params.p2Care = 0; params.p2Mobility = 0;
+    params.kidsLower = 0; params.kidsHigher = 0;
     showResults(calcDisposable(params));
   });
 
-  // Sensitivity: cheapest area (just lower rent to average)
   document.getElementById('sens-cheapestarea').addEventListener('click', () => {
     const params = getState();
-    params.monthlyRent = 600;  // roughly the UK cheapest quartile
+    params.monthlyRent = 600;
     params.councilTax = 1000;
     showResults(calcDisposable(params));
   });
