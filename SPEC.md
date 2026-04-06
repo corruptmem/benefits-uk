@@ -272,3 +272,34 @@ GitHub Pages serves `www/` directory. No server required. `compute/` workflow ru
 ### Browser support
 
 Modern browsers only (ES2020). No IE11. Progressive enhancement: works without JS for basic rent lookup, full functionality with JS.
+
+---
+
+## Implementation Status (as of 2026-04-06)
+
+### Done ✅
+- **Area data**: 170 UK towns/cities with hardcoded rent estimates (ONS + Zoopla + Rightmove sourced)
+- **Area selector**: searchable dropdown in web app; auto-fills rent + council tax on selection
+- **Benefits engine**: full client-side JS (UC, PIP, DLA child, Carer's Allowance, Child Benefit)
+- **Tax/NI/student loan**: Plan 1/2/4, UK progressive income tax bands
+- **Commute costs**: car (Motability £0 / AA £2,020), train (£2,300/£4,500)
+- **16-hour threshold**: correctly modelled — work allowance drops to £0 at 16h
+- **Benefit cap**: £25k for couples; lifted if LCWRA or disabled child
+- **Sensitivity panel**: "+1 day", "no kids", "no disability", "cheapest area"
+- **Precomputation**: 170 areas × 120,870 scenarios → lookup.json.gz (5.6MB gzip)
+- **Deployment**: GitHub Pages via GitHub Actions (www/ served from main branch)
+
+### Blocked 🔒
+- **ONS live data**: ONS website requires browser session cookies for the download.
+  `fetch_ons.py` attempts direct HTTP but gets 403. Workaround: manually download
+  from https://www.ons.gov.uk and place as `data/areas.json`.
+  Run `make compute` to regenerate the lookup table.
+- **Precomputed lookup not embedded**: the lookup.json.gz is gitignored (5.6MB).
+  Generated via `make compute` in CI. App works without it (client-side calculation).
+
+### Not yet done
+- [ ] "Inverse lookup": given £X disposable income, find cheapest area + minimal kids
+- [ ] Full 7018 BUa coverage (currently 170 major towns/cities)
+- [ ] Scotland-specific benefits (Council Tax Reduction schemes differ)
+- [ ] Child Benefit income tax charge (HITC) modelling
+- [ ] Self-assessment tax return interaction modelling
